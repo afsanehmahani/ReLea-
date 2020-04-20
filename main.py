@@ -6,7 +6,7 @@ from stable_baselines import DQN
 cycle = 1
 env = CustomEnv(cycle)
 
-model = DQN(MlpPolicy, env, verbose=1)
+model = DQN(MlpPolicy, env, buffer_size = 10000, batch_size = 1000, exploration_fraction=0.1, exploration_final_eps=0.02, exploration_initial_eps=1.0, verbose=1)
 model.learn(total_timesteps=25)
 model.save("deepq_custEnv")
 
