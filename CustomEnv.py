@@ -25,14 +25,19 @@ class CustomEnv(gym.Env):
     
     self.cycle = cycl
     N_DISCRETE_ACTIONS = 114
+    max_duration = max(self.testcases.iloc[:,2])
+    min_duration = min(self.testcases.iloc[:,2])
+    max_verdict = max(self.testcases.iloc[:,6])
+    min_verdict = min(self.testcases.iloc[:,6])
     
     self.tcs_current_CI = np.where(self.testcases.iloc[:,7]==cycl)[0]
+    print(self.tcs_current_CI)
     # Define action and observation space
     # They must be gym.spaces objects
     # Example when using discrete actions:
     self.action_space = spaces.Discrete(N_DISCRETE_ACTIONS)
     # Example for using image as input:
-    self.observation_space = spaces.Tuple((self.testcases.iloc[self.tcs_current_CI,2]), (self.testcases.iloc[self.tcs_current_CI,6]))
+    self.observation_space = spaces.Box(low=np.array([min_duration, min_verdict]), high=np.array([max_duration, max_verdict]), dtype=np.uint8)
     
     print (self.observation_space)
     
