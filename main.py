@@ -36,7 +36,7 @@ for j in range(352):
     
     env.cycle = j+1
     obs = env.reset()
-    print(env.cycle)
+   
     act = []
 
     for i in range(len(env.tcs_current_CI)-1):
