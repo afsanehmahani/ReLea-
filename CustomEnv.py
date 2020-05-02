@@ -1,13 +1,9 @@
-
-"""
-@author: admin
-"""
-
 import gym
 from gym import spaces
 import pandas as pd 
 import numpy as np
 import os
+
 
 class first_env(gym.Env):
   """Custom Environment that follows gym interface"""
@@ -20,17 +16,17 @@ class first_env(gym.Env):
     print(os.getcwd())
     os.chdir('C:/Users/admin/Desktop/RL-Project')
     print(os.getcwd())
-    self.testcases = pd.read_csv('tc_firstcycle.csv', error_bad_lines=False, sep=';')
+    self.testcases = pd.read_csv('tc_data_paintcontrol.csv', error_bad_lines=False, sep=';')
     print(self.testcases)
     
-    length_tc = np.size(self.testcases,0)
+    #length_tc = np.size(self.testcases,0)
+    self.counter = 1
     
-    cycle = 1
-    self.cycle = cycle
+    self.cycle = 1
     
     self.tcs_current_CI = np.where(self.testcases.iloc[:,7]== self.cycle)[0]
     
-    N_DISCRETE_ACTIONS = np.size(self.testcases,0)
+    N_DISCRETE_ACTIONS = len(self.tcs_current_CI)
     
     max_duration = max(self.testcases.iloc[:,2])
     min_duration = min(self.testcases.iloc[:,2])
@@ -48,9 +44,16 @@ class first_env(gym.Env):
     print (self.observation_space)
     
   def step(self, act):
+    
+      self.tcs_current_CI = np.where(self.testcases.iloc[:,7]== self.cycle-1)[0]
       
-      print(act)
       
+      if self.counter == 1:
+      
+          act = [act]
+      else:
+          act = act
+          
       length_action = np.size(act,0)
       reward=np.zeros(length_action, dtype=int)
        
@@ -58,28 +61,34 @@ class first_env(gym.Env):
           
           rank = act[tc]
           
-          if self.testcases.iloc[tc , 6] == 0:
+          if self.testcases.iloc[self.tcs_current_CI[tc] , 6] == 0:
               
-              reward[tc] = (min((np.linalg.norm(rank)-1), -np.linalg.norm(self.testcases.iloc[tc , 2])))
+              reward[tc] = (min((np.linalg.norm(rank)-1), -np.linalg.norm(self.testcases.iloc[self.tcs_current_CI[tc] , 2])))
           else:
-              reward[tc] = (1-abs(np.linalg.norm(rank)-np.linalg.norm(self.testcases.iloc[tc , 2])))
+              reward[tc] = (1-abs(np.linalg.norm(rank)-np.linalg.norm(self.testcases.iloc[self.tcs_current_CI[tc] , 2])))
     
       R1 = sum(reward/np.size(reward,0))
     
       
       
+      obs = ([self.testcases.iloc[self.tcs_current_CI[self.counter],2], self.testcases.iloc[self.tcs_current_CI[self.counter],6]])
+      
+        
+      self.counter = self.counter+1
+      
+      done = False
+      info = {}
     
-      obs = ([self.testcases.iloc[length_action,2], self.testcases.iloc[length_action,6]])
-     
-    
-      return obs, R1
+      return obs, R1,  done, info
 
   def reset(self):
- 
       
+      self.counter = 1
       
-      obs = np.array([self.testcases.iloc[0,2], self.testcases.iloc[0,6]])
+      self.tcs_current_CI = np.where(self.testcases.iloc[:,7]== self.cycle)[0]
+      obs = np.array([self.testcases.iloc[self.tcs_current_CI[0],2], self.testcases.iloc[self.tcs_current_CI[0],6]])
       
+      self.cycle = self.cycle+1
       
-      return obs  # reward, done, info can't be included
-  
+     
+      return obs # reward, done, info can't be included
