@@ -20,7 +20,7 @@ class first_env(gym.Env):
     print(self.testcases)
     
     #length_tc = np.size(self.testcases,0)
-    self.counter = 1
+    self.counter = 0
     
     self.cycle = 1
     
@@ -47,12 +47,21 @@ class first_env(gym.Env):
     
       self.tcs_current_CI = np.where(self.testcases.iloc[:,7]== self.cycle-1)[0]
       
-      
-      if self.counter == 1:
+      aa = type(act) is np.int64
+      bb = type(act) is tuple
+      if aa == True:
       
           act = [act]
+      elif bb == True:
+          act = [act[0]]
       else:
           act = act
+      
+      #if self.counter == 1:
+      
+       #   act = [act]
+      #else:
+          #act = act
           
       length_action = np.size(act,0)
       reward=np.zeros(length_action, dtype=int)
@@ -68,13 +77,17 @@ class first_env(gym.Env):
               reward[tc] = (1-abs(np.linalg.norm(rank)-np.linalg.norm(self.testcases.iloc[self.tcs_current_CI[tc] , 2])))
     
       R1 = sum(reward/np.size(reward,0))
-    
       
+      if (len(self.tcs_current_CI)) == 1:
+          self.counter = 0
+      else:
+    
+          self.counter = self.counter+1
       
       obs = ([self.testcases.iloc[self.tcs_current_CI[self.counter],2], self.testcases.iloc[self.tcs_current_CI[self.counter],6]])
       
         
-      self.counter = self.counter+1
+      
       
       done = False
       info = {}
@@ -83,7 +96,7 @@ class first_env(gym.Env):
 
   def reset(self):
       
-      self.counter = 1
+      self.counter = 0
       
       self.tcs_current_CI = np.where(self.testcases.iloc[:,7]== self.cycle)[0]
       obs = np.array([self.testcases.iloc[self.tcs_current_CI[0],2], self.testcases.iloc[self.tcs_current_CI[0],6]])
