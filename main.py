@@ -27,7 +27,7 @@ for j in range(352):
                 tensorboard_log=None, _init_setup_model=True, policy_kwargs=None, 
                 full_tensorboard_log=False, seed=None)
     
-    model.learn(total_timesteps=1)
+    model.learn(total_timesteps=2)
     model.save("deepq_custEnv")
 
     del model # remove to demonstrate saving and loading
@@ -38,18 +38,19 @@ for j in range(352):
     obs = env.reset()
    
     act = []
+    
 
     for i in range(len(env.tcs_current_CI)-1):
-       
-
-        env.N_DISCRETE_ACTIONS =len(env.tcs_current_CI)
-        
-        #while True:
-        action = model.predict(obs)
-
-        act.append(action[0])
-
-
-        obs, R1, _, _= env.step(act)
+           
     
+        env.N_DISCRETE_ACTIONS =len(env.tcs_current_CI)
+            
+    #while True:
+        action = model.predict(obs)
+    
+        act.append(action[0])
+    
+    
+        obs, R1, _, _= env.step(act)
+        
     print(R1)
