@@ -56,12 +56,6 @@ class first_env(gym.Env):
           act = [act[0]]
       else:
           act = act
-      
-      #if self.counter == 1:
-      
-       #   act = [act]
-      #else:
-          #act = act
           
       length_action = np.size(act,0)
       reward=np.zeros(length_action, dtype=int)
